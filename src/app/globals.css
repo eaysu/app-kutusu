@@ -1,26 +1,135 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Neobrutalism-Lite color tokens */
+  --color-surface: #fcf8f9;
+  --color-surface-dim: #dcd9da;
+  --color-surface-bright: #fcf8f9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3f4;
+  --color-surface-container: #f0edee;
+  --color-surface-container-high: #eae7e8;
+  --color-surface-container-highest: #e5e2e3;
+  --color-surface-variant: #e5e2e3;
+
+  --color-on-surface: #1b1b1c;
+  --color-on-surface-variant: #4d4732;
+  --color-on-background: #1b1b1c;
+  --color-background: #fcf8f9;
+  --color-outline: #7e775f;
+  --color-outline-variant: #d0c6ab;
+
+  --color-primary: #705d00;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #ffd700;
+  --color-on-primary-container: #705e00;
+  --color-primary-fixed: #ffe16d;
+  --color-primary-fixed-dim: #e9c400;
+  --color-on-primary-fixed: #221b00;
+  --color-on-primary-fixed-variant: #544600;
+
+  --color-secondary: #904d00;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fd8b00;
+  --color-on-secondary-container: #603100;
+  --color-secondary-fixed: #ffdcc3;
+  --color-secondary-fixed-dim: #ffb77d;
+  --color-on-secondary-fixed: #2f1500;
+  --color-on-secondary-fixed-variant: #6e3900;
+
+  --color-tertiary: #1b6b4f;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #9ee9c7;
+  --color-on-tertiary-container: #1c6b50;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-form-cream: #fdf5e6;
+
+  /* Spacing tokens */
+  --spacing-base: 8px;
+  --spacing-gutter: 16px;
+  --spacing-stack-sm: 12px;
+  --spacing-stack-md: 24px;
+  --spacing-stack-lg: 48px;
+  --spacing-container-margin: 24px;
+
+  /* Font families wired to next/font CSS variables */
+  --font-display: var(--font-quicksand), system-ui, sans-serif;
+  --font-headline: var(--font-quicksand), system-ui, sans-serif;
+  --font-body: var(--font-rubik), system-ui, sans-serif;
+  --font-label: var(--font-rubik), system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Material Symbols Outlined — font-face is provided by the Google Fonts
+   stylesheet loaded in layout.tsx (it serves the latest woff2 URLs and the
+   ligature table). Keep only the typography rules here. */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Neobrutalism hard shadows */
+.shadow-brutal-sm {
+  box-shadow: 2px 2px 0 0 #1b1b1c;
+}
+.shadow-brutal {
+  box-shadow: 4px 4px 0 0 #1b1b1c;
+}
+.shadow-brutal-md {
+  box-shadow: 6px 6px 0 0 #1b1b1c;
+}
+.shadow-brutal-lg {
+  box-shadow: 8px 8px 0 0 #1b1b1c;
+}
+.shadow-brutal-up {
+  box-shadow: 0 -4px 0 0 #1b1b1c;
 }
 
+/* Press-interaction helpers */
+.brutal-press {
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.brutal-press:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 #1b1b1c;
+}
+.brutal-press:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 #1b1b1c;
+}
+
+.brutal-press-lg {
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.brutal-press-lg:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 0 #1b1b1c;
+}
+.brutal-press-lg:active {
+  transform: translate(4px, 4px);
+  box-shadow: 2px 2px 0 0 #1b1b1c;
+}
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
 }

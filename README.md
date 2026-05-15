@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# App Kutusu
 
-## Getting Started
+A playful, anonymous app-idea wall. Share one idea, see them all.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) + TypeScript
+- Tailwind CSS v4 with custom Neobrutalism-Lite tokens
+- Supabase (Postgres) for storage
+- OpenAI for one-shot idea analysis (cached on submit)
+- Framer Motion for accordion / toast / layout animations
+- Quicksand + Rubik (Google Fonts), Material Symbols Outlined for icons
+
+## Getting started
 
 ```bash
+cp .env.example .env.local   # fill SUPABASE_* and OPENAI_API_KEY
+# then in Supabase SQL editor, run supabase/schema.sql once
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+If env is empty the app falls back to an in-memory store so the UI still works
+locally; data is lost on server restart.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Layout
 
-## Learn More
+- `src/app/` — App Router pages and API routes (`/api/ideas`, `/api/ideas/[id]/upvote`, `/api/ideas/analyze`, `/api/lang`)
+- `src/components/` — Client/server UI pieces (TopAppBar, Hero, Feed, MyIdeaCard, …)
+- `src/lib/` — `ideas.ts` (data layer), `session.ts` (cookie), `i18n.ts` (TR/EN dictionary), `lang.ts` (locale resolution), `ai.ts` (OpenAI), `supabase.ts` (service-role client)
+- `supabase/schema.sql` — Database schema with triggers for upvote count + `updated_at`
 
-To learn more about Next.js, take a look at the following resources:
+## i18n
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Default Turkish; falls back to English when the browser's `Accept-Language` does
+not include `tr`. Users can toggle TR/EN from the top app bar; the choice is
+persisted in the `ak_lang` cookie.
