@@ -129,6 +129,10 @@
 
 html,
 body {
+  /* The Neobrutalism palette is intentionally always-light. Declaring a
+     color-scheme opts out of mobile browser "force dark" auto-darkening,
+     which was muddying the cream/yellow identity on phones. */
+  color-scheme: light;
   background: var(--color-surface);
   color: var(--color-on-surface);
   font-family: var(--font-body);

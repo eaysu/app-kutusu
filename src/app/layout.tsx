@@ -50,6 +50,7 @@ export default async function RootLayout({
       className={`${quicksand.variable} ${rubik.variable} h-full antialiased`}
     >
       <head>
+        <meta name="color-scheme" content="light" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

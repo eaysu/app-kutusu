@@ -309,11 +309,12 @@ function ScoreBar({
       </div>
       {note && (
         <p
-          className="text-[12px] leading-[1.4] opacity-70"
+          className="text-[12px] leading-[1.4] opacity-80"
           style={{ fontFamily: "var(--font-body)" }}
         >
           {note}
         </p>
+
       )}
     </div>
   );
