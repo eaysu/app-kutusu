@@ -6,13 +6,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Hero } from "./Hero";
 import { SubmissionForm } from "./SubmissionForm";
 import { LockedFeed } from "./LockedFeed";
-import { MyIdeaCard } from "./MyIdeaCard";
 import { Feed } from "./Feed";
 import { BottomNav } from "./BottomNav";
 import { CookieToast, CookieWarningBubble } from "./CookieWarning";
 import { EditIdeaModal } from "./EditIdeaModal";
 import { isLegacyAnalysis, type Idea } from "@/lib/ideas";
-import type { Lang } from "@/lib/i18n";
+import { t, type Lang } from "@/lib/i18n";
 
 type Tab = "feed" | "mine";
 
@@ -67,16 +66,12 @@ export function HomeClient({
     })();
   }, [needsAnalysis, myIdea, router]);
 
-  async function handleSubmit(data: {
-    title: string;
-    description: string;
-    similarLinks: string[];
-  }) {
+  async function handleSubmit(data: { title: string; description: string }) {
     setSubmitError(null);
     const res = await fetch("/api/ideas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, similarLinks: [] }),
     });
     if (!res.ok) {
       const payload = await res.json().catch(() => ({}));
@@ -88,16 +83,12 @@ export function HomeClient({
     router.refresh();
   }
 
-  async function handleEditSave(data: {
-    title: string;
-    description: string;
-    similarLinks: string[];
-  }) {
+  async function handleEditSave(data: { title: string; description: string }) {
     setEditError(null);
     const res = await fetch("/api/ideas", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, similarLinks: [] }),
     });
     if (!res.ok) {
       const payload = await res.json().catch(() => ({}));
@@ -132,21 +123,27 @@ export function HomeClient({
               className="flex flex-col gap-12"
               {...fadeSwap}
             >
-              <div className={tab === "mine" ? "contents" : "hidden md:contents"}>
-                <MyIdeaCard
-                  idea={myIdea}
-                  onEdit={() => setEditing(true)}
-                  lang={lang}
-                />
-              </div>
               <div className={tab === "feed" ? "contents" : "hidden md:contents"}>
                 <Feed
                   ideas={feed}
                   initialUpvotedIds={myUpvotedIds}
                   unlocked={unlocked}
                   lang={lang}
+                  heading={t(lang, "feed_heading")}
+                  onEdit={() => setEditing(true)}
                 />
                 <CookieWarningBubble lang={lang} />
+              </div>
+              <div className={tab === "mine" ? "contents" : "hidden"}>
+                <Feed
+                  ideas={myIdea ? [myIdea] : []}
+                  initialUpvotedIds={myUpvotedIds}
+                  unlocked={unlocked}
+                  lang={lang}
+                  heading={t(lang, "my_idea_heading")}
+                  initialExpandedId={myIdea?.id ?? null}
+                  onEdit={() => setEditing(true)}
+                />
               </div>
             </motion.div>
           )}

@@ -1,21 +1,47 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import type { Idea } from "@/lib/ideas";
+import { pickAnalysisLocale, type Idea, type Uniqueness } from "@/lib/ideas";
+import { t, type Lang, type Key } from "@/lib/i18n";
+
+const UNIQUENESS_COPY: Record<Uniqueness, { labelKey: Key; icon: string }> = {
+  original: { labelKey: "uniqueness_original", icon: "bolt" },
+  similar_exists: { labelKey: "uniqueness_similar", icon: "compare_arrows" },
+  common: { labelKey: "uniqueness_common", icon: "groups" },
+};
 
 type Props = {
   idea: Idea;
   expanded: boolean;
   upvoted: boolean;
+  lang: Lang;
   onToggle: () => void;
   onUpvote: () => void;
+  onEdit?: () => void;
 };
 
-export function FeedCard({ idea, expanded, upvoted, onToggle, onUpvote }: Props) {
+export function FeedCard({
+  idea,
+  expanded,
+  upvoted,
+  lang,
+  onToggle,
+  onUpvote,
+  onEdit,
+}: Props) {
+  const mine = idea.isMine === true;
+  const uniq = idea.uniqueness ? UNIQUENESS_COPY[idea.uniqueness] : null;
+  const analysis =
+    mine && idea.aiAnalysis ? pickAnalysisLocale(idea.aiAnalysis, lang) : null;
+
   return (
     <motion.div
       layout
-      className="bg-surface-container-lowest border-[3px] border-on-background rounded-3xl shadow-brutal-md p-6 flex flex-col gap-2 cursor-pointer"
+      className={`border-on-background rounded-3xl shadow-brutal-md p-6 flex flex-col gap-2 cursor-pointer ${
+        mine
+          ? "bg-primary-container text-on-primary-container border-[4px]"
+          : "bg-surface-container-lowest border-[3px]"
+      }`}
       onClick={onToggle}
       whileHover={{ y: -2 }}
       transition={{ type: "spring", stiffness: 320, damping: 28 }}
@@ -47,7 +73,9 @@ export function FeedCard({ idea, expanded, upvoted, onToggle, onUpvote }: Props)
           {idea.title}
         </h3>
         <motion.span
-          className="material-symbols-outlined text-on-surface-variant"
+          className={`material-symbols-outlined ${
+            mine ? "text-on-primary-container" : "text-on-surface-variant"
+          }`}
           animate={{ rotate: expanded ? 180 : 0 }}
           transition={{ type: "spring", stiffness: 280, damping: 20 }}
         >
@@ -64,30 +92,109 @@ export function FeedCard({ idea, expanded, upvoted, onToggle, onUpvote }: Props)
             transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-3 mt-2 pt-3 border-t-2 border-on-background/10">
+            <div
+              className={`flex flex-col gap-3 mt-2 pt-3 border-t-2 ${
+                mine ? "border-on-background/20" : "border-on-background/10"
+              }`}
+            >
               <p
-                className="text-[16px] leading-[1.5] text-on-surface-variant"
+                className={`text-[16px] leading-[1.5] ${
+                  mine ? "" : "text-on-surface-variant"
+                }`}
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {idea.description}
               </p>
-              {idea.similarLinks && idea.similarLinks.length > 0 && (
-                <ul className="flex flex-wrap gap-2">
-                  {idea.similarLinks.map((link) => (
-                    <li key={link}>
-                      <a
-                        href={link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-block bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full border border-on-background text-[14px] font-bold tracking-[0.05em] underline-offset-2 hover:underline"
+
+              {mine && (
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  {uniq ? (
+                    <div className="flex items-center gap-2 bg-surface text-on-surface border-[2px] border-on-background rounded-full px-3 py-1 shadow-brutal-sm">
+                      <span className="material-symbols-outlined text-base text-secondary-container">
+                        {uniq.icon}
+                      </span>
+                      <span
+                        className="text-[14px] font-bold tracking-[0.05em]"
                         style={{ fontFamily: "var(--font-label)" }}
                       >
-                        {safeHost(link)}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+                        {t(lang, uniq.labelKey)}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 bg-surface text-on-surface border-[2px] border-on-background rounded-full px-3 py-1 shadow-brutal-sm">
+                      <span className="material-symbols-outlined text-base text-on-surface-variant animate-spin">
+                        progress_activity
+                      </span>
+                      <span
+                        className="text-[14px] font-bold tracking-[0.05em]"
+                        style={{ fontFamily: "var(--font-label)" }}
+                      >
+                        {t(lang, "analyzing")}
+                      </span>
+                    </div>
+                  )}
+                  {onEdit && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit();
+                      }}
+                      className="bg-surface text-on-surface border-[3px] border-on-background rounded-2xl px-6 py-2 shadow-brutal brutal-press flex items-center gap-2"
+                      style={{
+                        fontFamily: "var(--font-label)",
+                        fontWeight: 700,
+                        fontSize: "14px",
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-lg">edit</span>
+                      {t(lang, "edit_button")}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {analysis && (
+                <div className="mt-1 pt-3 border-t-[2px] border-on-background/20 flex flex-col gap-3">
+                  <span
+                    className="text-[14px] tracking-[0.05em] font-bold opacity-70 flex items-center gap-1"
+                    style={{ fontFamily: "var(--font-label)" }}
+                  >
+                    <span className="material-symbols-outlined text-base">
+                      auto_awesome
+                    </span>
+                    {t(lang, "analysis_heading")}
+                  </span>
+                  <AnalysisRow
+                    label={t(lang, "analysis_target")}
+                    value={analysis.target_audience}
+                  />
+                  <AnalysisRow
+                    label={t(lang, "analysis_monetization")}
+                    value={analysis.monetization_potential}
+                  />
+                  {analysis.possible_competitors.length > 0 && (
+                    <div className="flex flex-col gap-1">
+                      <span
+                        className="text-[12px] tracking-[0.05em] font-bold opacity-70"
+                        style={{ fontFamily: "var(--font-label)" }}
+                      >
+                        {t(lang, "analysis_competitors")}
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {analysis.possible_competitors.map((c) => (
+                          <span
+                            key={c}
+                            className="inline-block bg-surface text-on-surface border-[2px] border-on-background rounded-full px-3 py-1 text-[13px] font-bold tracking-[0.03em]"
+                            style={{ fontFamily: "var(--font-label)" }}
+                          >
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </motion.div>
@@ -97,11 +204,18 @@ export function FeedCard({ idea, expanded, upvoted, onToggle, onUpvote }: Props)
   );
 }
 
-function safeHost(link: string): string {
-  try {
-    const url = new URL(link.startsWith("http") ? link : `https://${link}`);
-    return url.hostname.replace(/^www\./, "");
-  } catch {
-    return link;
-  }
+function AnalysisRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span
+        className="text-[12px] tracking-[0.05em] font-bold opacity-70 uppercase"
+        style={{ fontFamily: "var(--font-label)" }}
+      >
+        {label}
+      </span>
+      <p className="text-[15px] leading-[1.5]" style={{ fontFamily: "var(--font-body)" }}>
+        {value}
+      </p>
+    </div>
+  );
 }

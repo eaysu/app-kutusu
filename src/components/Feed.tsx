@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Idea } from "@/lib/ideas";
-import { t, type Lang } from "@/lib/i18n";
+import type { Lang } from "@/lib/i18n";
 import { FeedCard } from "./FeedCard";
 
 type Props = {
@@ -11,10 +11,21 @@ type Props = {
   initialUpvotedIds: string[];
   unlocked: boolean;
   lang: Lang;
+  heading: string;
+  initialExpandedId?: string | null;
+  onEdit?: () => void;
 };
 
-export function Feed({ ideas, initialUpvotedIds, unlocked, lang }: Props) {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+export function Feed({
+  ideas,
+  initialUpvotedIds,
+  unlocked,
+  lang,
+  heading,
+  initialExpandedId = null,
+  onEdit,
+}: Props) {
+  const [expandedId, setExpandedId] = useState<string | null>(initialExpandedId);
   const [upvoted, setUpvoted] = useState<Set<string>>(
     () => new Set(initialUpvotedIds),
   );
@@ -78,7 +89,7 @@ export function Feed({ ideas, initialUpvotedIds, unlocked, lang }: Props) {
         className="text-[28px] md:text-[32px] leading-[1.2] font-bold text-on-background"
         style={{ fontFamily: "var(--font-headline)" }}
       >
-        {t(lang, "feed_heading")}
+        {heading}
       </h2>
       <motion.div layout className="flex flex-col gap-6">
         <AnimatePresence initial={false}>
@@ -88,8 +99,10 @@ export function Feed({ ideas, initialUpvotedIds, unlocked, lang }: Props) {
                 idea={{ ...idea, upvotes: voteCounts[idea.id] ?? idea.upvotes }}
                 expanded={expandedId === idea.id}
                 upvoted={upvoted.has(idea.id)}
+                lang={lang}
                 onToggle={() => toggle(idea.id)}
                 onUpvote={() => upvote(idea.id)}
+                onEdit={idea.isMine ? onEdit : undefined}
               />
             </motion.div>
           ))}

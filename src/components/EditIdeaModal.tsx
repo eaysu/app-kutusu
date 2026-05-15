@@ -7,7 +7,7 @@ import { t, type Lang } from "@/lib/i18n";
 
 type Props = {
   idea: Idea;
-  onSave: (data: { title: string; description: string; similarLinks: string[] }) => void;
+  onSave: (data: { title: string; description: string }) => void;
   onClose: () => void;
   serverError?: string | null;
   lang: Lang;
@@ -24,7 +24,6 @@ export function EditIdeaModal({
 }: Props) {
   const [title, setTitle] = useState(idea.title);
   const [description, setDescription] = useState(idea.description);
-  const [similar, setSimilar] = useState((idea.similarLinks ?? []).join(", "));
   const [error, setError] = useState<string | null>(null);
 
   function submit(e: React.FormEvent) {
@@ -38,11 +37,7 @@ export function EditIdeaModal({
       return;
     }
     setError(null);
-    const links = similar
-      .split(/\s*,\s*|\n+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-    onSave({ title: title.trim(), description: description.trim(), similarLinks: links });
+    onSave({ title: title.trim(), description: description.trim() });
   }
 
   return (
@@ -106,21 +101,6 @@ export function EditIdeaModal({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full bg-surface-container-lowest border-[3px] border-on-background rounded-2xl px-4 py-3 text-[18px] focus:border-[5px] focus:outline-none resize-none"
-                  style={{ fontFamily: "var(--font-body)" }}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label
-                  className="text-[14px] font-bold tracking-[0.05em]"
-                  style={{ fontFamily: "var(--font-label)" }}
-                >
-                  {t(lang, "form_similar_label")}
-                </label>
-                <input
-                  value={similar}
-                  onChange={(e) => setSimilar(e.target.value)}
-                  placeholder={t(lang, "form_similar_placeholder")}
-                  className="w-full bg-surface-container-lowest border-[3px] border-on-background rounded-2xl px-4 py-3 text-[18px] focus:border-[5px] focus:outline-none"
                   style={{ fontFamily: "var(--font-body)" }}
                 />
               </div>
