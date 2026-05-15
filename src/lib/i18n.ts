@@ -23,6 +23,8 @@ const dict = {
     form_similar_placeholder: "Linkleri virgülle ayır...",
     form_submit: "Gönder ve Aç",
     form_submitting: "Gönderiliyor...",
+    form_detail_hint:
+      "Fikrini ne kadar detaylı yazarsan, AI analizi o kadar isabetli olur.",
     form_err_title: "Başlık en az 3 karakter olmalı.",
     form_err_desc: "Açıklama en az 80 karakter olmalı (şu anda {n}).",
     form_err_validation: "Yukarıdaki hataları düzelt lütfen.",
@@ -44,6 +46,7 @@ const dict = {
     analysis_competitors: "OLASI RAKİPLER",
 
     feed_heading: "Feed",
+    feed_upvote_hint: "Beğendiğin fikirleri ↑ rozetine dokunarak oyla.",
 
     nav_feed: "Feed",
     nav_mine: "Fikrim",
@@ -59,6 +62,9 @@ const dict = {
     edit_modal_cancel: "İPTAL",
     edit_modal_save: "KAYDET",
     edit_modal_err_generic: "Kaydedilemedi ({err}).",
+    edit_modal_err_limit:
+      "Düzenleme hakkını kullandın. Fikir artık değiştirilemez.",
+    edit_limit_note: "Bir düzenleme hakkın var. Kaydedince AI tekrar analiz eder.",
 
     lang_label: "Dil",
     lang_tr: "TR",
@@ -83,6 +89,8 @@ const dict = {
     form_similar_placeholder: "Links separated by commas...",
     form_submit: "Submit to Unlock",
     form_submitting: "Submitting...",
+    form_detail_hint:
+      "The more detail you write, the sharper the AI analysis will be.",
     form_err_title: "Title must be at least 3 characters.",
     form_err_desc: "Description must be at least 80 characters (currently {n}).",
     form_err_validation: "Please fix the errors above.",
@@ -104,6 +112,7 @@ const dict = {
     analysis_competitors: "POSSIBLE COMPETITORS",
 
     feed_heading: "The Feed",
+    feed_upvote_hint: "Tap the ↑ badge to upvote ideas you like.",
 
     nav_feed: "Feed",
     nav_mine: "My Idea",
@@ -119,6 +128,10 @@ const dict = {
     edit_modal_cancel: "CANCEL",
     edit_modal_save: "SAVE",
     edit_modal_err_generic: "Could not save ({err}).",
+    edit_modal_err_limit:
+      "You've used your edit. This idea can no longer be changed.",
+    edit_limit_note:
+      "You get one edit. Saving will re-run the AI analysis.",
 
     lang_label: "Language",
     lang_tr: "TR",

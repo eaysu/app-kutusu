@@ -31,8 +31,9 @@ export function FeedCard({
 }: Props) {
   const mine = idea.isMine === true;
   const uniq = idea.uniqueness ? UNIQUENESS_COPY[idea.uniqueness] : null;
-  const analysis =
-    mine && idea.aiAnalysis ? pickAnalysisLocale(idea.aiAnalysis, lang) : null;
+  const analysis = idea.aiAnalysis
+    ? pickAnalysisLocale(idea.aiAnalysis, lang)
+    : null;
 
   return (
     <motion.div
@@ -52,10 +53,12 @@ export function FeedCard({
             e.stopPropagation();
             onUpvote();
           }}
-          className={`flex items-center gap-1 px-3 py-1 border-[2px] border-on-background rounded-full transition-colors ${
-            upvoted ? "bg-tertiary-container" : "bg-surface-variant"
+          className={`flex items-center gap-1 px-3 py-1.5 border-[2px] border-on-background rounded-full shadow-brutal-sm brutal-press transition-colors ${
+            upvoted ? "bg-tertiary-container" : "bg-secondary-container"
           }`}
           aria-label={`Upvote ${idea.title}`}
+          aria-pressed={upvoted}
+          whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.9 }}
         >
           <span className="material-symbols-outlined text-xl">keyboard_arrow_up</span>
@@ -106,7 +109,7 @@ export function FeedCard({
                 {idea.description}
               </p>
 
-              {mine && (
+              {(uniq || mine) && (
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   {uniq ? (
                     <div className="flex items-center gap-2 bg-surface text-on-surface border-[2px] border-on-background rounded-full px-3 py-1 shadow-brutal-sm">
@@ -133,7 +136,7 @@ export function FeedCard({
                       </span>
                     </div>
                   )}
-                  {onEdit && (
+                  {mine && onEdit && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

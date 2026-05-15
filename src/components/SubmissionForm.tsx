@@ -105,6 +105,12 @@ export function SubmissionForm({ onSubmit, serverError, lang }: Props) {
           {errors.description && (
             <span className="text-error text-sm font-medium">{errors.description}</span>
           )}
+          <span
+            className="text-[13px] text-on-surface-variant"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            {t(lang, "form_detail_hint")}
+          </span>
         </div>
 
         {serverErrorText() && (

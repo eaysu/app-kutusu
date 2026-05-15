@@ -53,6 +53,7 @@ export type Idea = {
   aiAnalysis?: IdeaAnalysis | null;
   isMine?: boolean;
   createdAt?: string;
+  editCount: number;
 };
 
 /* --------------------------- In-memory fallback --------------------------- */
@@ -65,6 +66,7 @@ type MemIdea = {
   upvotes: number;
   uniqueness: Uniqueness | null;
   aiAnalysis: IdeaAnalysis | null;
+  editCount: number;
   createdAt: string;
 };
 
@@ -88,6 +90,7 @@ function memStore() {
         upvotes: 342,
         uniqueness: "similar_exists",
         aiAnalysis: null,
+        editCount: 0,
       },
       {
         id: "seed-2",
@@ -99,6 +102,7 @@ function memStore() {
         upvotes: 128,
         uniqueness: "original",
         aiAnalysis: null,
+        editCount: 0,
       },
       {
         id: "seed-3",
@@ -110,6 +114,7 @@ function memStore() {
         upvotes: 87,
         uniqueness: "common",
         aiAnalysis: null,
+        editCount: 0,
       },
     ];
     const now = Date.now();
@@ -138,6 +143,7 @@ function rowToIdea(d: IdeaRow, isMine: boolean): Idea {
     aiAnalysis: (d.ai_analysis as IdeaAnalysis | null) ?? null,
     isMine,
     createdAt: d.created_at,
+    editCount: d.edit_count ?? 0,
   };
 }
 
@@ -249,6 +255,7 @@ export async function createIdea(input: CreateIdeaInput): Promise<Idea> {
     upvotes: 0,
     uniqueness: null,
     aiAnalysis: null,
+    editCount: 0,
     createdAt: new Date().toISOString(),
   };
   store.ideas.set(mem.id, mem);
@@ -260,17 +267,23 @@ export type UpdateIdeaInput = {
   title: string;
   description: string;
   similarLinks: string[];
+  /** New value for edit_count (existing + 1), set by the caller. */
+  editCount: number;
 };
 
 export async function updateMyIdea(input: UpdateIdeaInput): Promise<Idea> {
   const sb = getSupabase();
   if (sb) {
+    // Clearing the cached analysis forces a fresh AI re-run on next view.
     const { data, error } = await sb
       .from("ideas")
       .update({
         title: input.title,
         description: input.description,
         similar_links: input.similarLinks,
+        edit_count: input.editCount,
+        ai_analysis: null,
+        ai_uniqueness: null,
       })
       .eq("session_id", input.sessionId)
       .select("*")
@@ -284,6 +297,9 @@ export async function updateMyIdea(input: UpdateIdeaInput): Promise<Idea> {
   mine.title = input.title;
   mine.description = input.description;
   mine.similarLinks = input.similarLinks;
+  mine.editCount = input.editCount;
+  mine.aiAnalysis = null;
+  mine.uniqueness = null;
   return memToIdea(mine, true);
 }
 
@@ -360,5 +376,6 @@ function memToIdea(m: MemIdea, isMine: boolean): Idea {
     aiAnalysis: m.aiAnalysis,
     isMine,
     createdAt: m.createdAt,
+    editCount: m.editCount,
   };
 }

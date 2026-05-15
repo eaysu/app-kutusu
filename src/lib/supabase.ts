@@ -9,6 +9,7 @@ export type IdeaRow = {
   upvotes: number;
   ai_analysis: unknown | null;
   ai_uniqueness: "original" | "similar_exists" | "common" | null;
+  edit_count: number;
   created_at: string;
   updated_at: string;
 };

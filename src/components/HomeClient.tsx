@@ -96,8 +96,13 @@ export function HomeClient({
       return;
     }
     setEditing(false);
+    // Edit cleared the cached analysis server-side; allow the effect to
+    // re-trigger a fresh AI run for the same idea id.
+    analyzeAttempted.current = null;
     router.refresh();
   }
+
+  const canEdit = myIdea !== null && myIdea.editCount < 1;
 
   return (
     <>
@@ -130,7 +135,7 @@ export function HomeClient({
                   unlocked={unlocked}
                   lang={lang}
                   heading={t(lang, "feed_heading")}
-                  onEdit={() => setEditing(true)}
+                  onEdit={canEdit ? () => setEditing(true) : undefined}
                 />
                 <CookieWarningBubble lang={lang} />
               </div>
@@ -142,7 +147,7 @@ export function HomeClient({
                   lang={lang}
                   heading={t(lang, "my_idea_heading")}
                   initialExpandedId={myIdea?.id ?? null}
-                  onEdit={() => setEditing(true)}
+                  onEdit={canEdit ? () => setEditing(true) : undefined}
                 />
               </div>
             </motion.div>

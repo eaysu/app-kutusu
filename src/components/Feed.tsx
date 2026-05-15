@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Idea } from "@/lib/ideas";
-import type { Lang } from "@/lib/i18n";
+import { t, type Lang } from "@/lib/i18n";
 import { FeedCard } from "./FeedCard";
 
 type Props = {
@@ -85,12 +85,22 @@ export function Feed({
 
   return (
     <section className="flex flex-col gap-6">
-      <h2
-        className="text-[28px] md:text-[32px] leading-[1.2] font-bold text-on-background"
-        style={{ fontFamily: "var(--font-headline)" }}
-      >
-        {heading}
-      </h2>
+      <div className="flex flex-col gap-1">
+        <h2
+          className="text-[28px] md:text-[32px] leading-[1.2] font-bold text-on-background"
+          style={{ fontFamily: "var(--font-headline)" }}
+        >
+          {heading}
+        </h2>
+        {sorted.length > 0 && (
+          <p
+            className="text-[14px] text-on-surface-variant"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            {t(lang, "feed_upvote_hint")}
+          </p>
+        )}
+      </div>
       <motion.div layout className="flex flex-col gap-6">
         <AnimatePresence initial={false}>
           {sorted.map((idea) => (

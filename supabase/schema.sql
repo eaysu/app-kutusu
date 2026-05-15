@@ -20,6 +20,7 @@ create table if not exists ideas (
   upvotes       integer not null default 0,
   ai_analysis   jsonb,
   ai_uniqueness ai_uniqueness,
+  edit_count    integer not null default 0,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );

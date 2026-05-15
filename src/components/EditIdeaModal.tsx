@@ -104,12 +104,20 @@ export function EditIdeaModal({
                   style={{ fontFamily: "var(--font-body)" }}
                 />
               </div>
+              <span
+                className="text-[13px] text-on-surface-variant"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                {t(lang, "edit_limit_note")} {t(lang, "form_detail_hint")}
+              </span>
               {error && (
                 <span className="text-error text-sm font-medium">{error}</span>
               )}
               {!error && serverError && (
                 <span className="text-error text-sm font-medium">
-                  {t(lang, "edit_modal_err_generic", { err: serverError })}
+                  {serverError === "edit_limit"
+                    ? t(lang, "edit_modal_err_limit")
+                    : t(lang, "edit_modal_err_generic", { err: serverError })}
                 </span>
               )}
               <div className="flex gap-3 mt-2">

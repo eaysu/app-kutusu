@@ -46,6 +46,9 @@ export async function PATCH(req: Request) {
   if (!existing) {
     return NextResponse.json({ error: "no_idea" }, { status: 404 });
   }
+  if (existing.editCount >= 1) {
+    return NextResponse.json({ error: "edit_limit" }, { status: 403 });
+  }
 
   let body: unknown;
   try {
@@ -64,6 +67,7 @@ export async function PATCH(req: Request) {
       title: result.title,
       description: result.description,
       similarLinks: parseSimilarLinks(data.similarLinks),
+      editCount: existing.editCount + 1,
     });
     return NextResponse.json({ idea });
   } catch (e) {
