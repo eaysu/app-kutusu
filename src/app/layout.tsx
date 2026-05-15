@@ -20,7 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const lang = await resolveLang();
   const title = t(lang, "site_title");
   const description = t(lang, "site_description");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  // Crawlers (Twitter/WhatsApp) need an absolute og:image URL. Prefer an
+  // explicit override, then Netlify's injected site URL, then localhost.
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.URL ??
+    process.env.DEPLOY_PRIME_URL ??
+    "http://localhost:3000";
   return {
     metadataBase: new URL(siteUrl),
     title,
