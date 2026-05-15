@@ -1,3 +1,6 @@
+// Server-only: this module reads SUPABASE_SERVICE_ROLE_KEY and must never be
+// imported from a client component. Client-safe types/helpers live in
+// ./analysis so the client bundle never pulls in this module or the SDK.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export type IdeaRow = {

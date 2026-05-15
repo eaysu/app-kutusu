@@ -1,7 +1,14 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { pickAnalysisLocale, type Idea, type Uniqueness } from "@/lib/ideas";
+import {
+  overallScore,
+  pickAnalysisLocale,
+  SCORE_CRITERIA,
+  type Idea,
+  type ScoreCriterion,
+  type Uniqueness,
+} from "@/lib/analysis";
 import { t, type Lang, type Key } from "@/lib/i18n";
 
 const UNIQUENESS_COPY: Record<Uniqueness, { labelKey: Key; icon: string }> = {
@@ -9,6 +16,19 @@ const UNIQUENESS_COPY: Record<Uniqueness, { labelKey: Key; icon: string }> = {
   similar_exists: { labelKey: "uniqueness_similar", icon: "compare_arrows" },
   common: { labelKey: "uniqueness_common", icon: "groups" },
 };
+
+const SCORE_LABEL: Record<ScoreCriterion, Key> = {
+  originality: "score_originality",
+  feasibility: "score_feasibility",
+  market_demand: "score_market_demand",
+  monetization: "score_monetization",
+};
+
+function scoreColor(overall: number): string {
+  if (overall >= 70) return "bg-tertiary-container text-on-surface";
+  if (overall >= 40) return "bg-secondary-container text-on-background";
+  return "bg-error text-white";
+}
 
 type Props = {
   idea: Idea;
@@ -34,6 +54,8 @@ export function FeedCard({
   const analysis = idea.aiAnalysis
     ? pickAnalysisLocale(idea.aiAnalysis, lang)
     : null;
+  const overall = overallScore(idea.aiAnalysis);
+  const scores = idea.aiAnalysis?.scores ?? null;
 
   return (
     <motion.div
@@ -75,6 +97,35 @@ export function FeedCard({
         >
           {idea.title}
         </h3>
+        {overall !== null && (
+          <span
+            className="flex flex-col items-center gap-0.5"
+            title={t(lang, "score_overall_aria", { n: overall })}
+            aria-label={t(lang, "score_overall_aria", { n: overall })}
+          >
+            <span
+              className="text-[9px] font-bold tracking-[0.08em] opacity-60 leading-none"
+              style={{ fontFamily: "var(--font-label)" }}
+            >
+              {t(lang, "score_badge_label")}
+            </span>
+            <span
+              className={`flex items-baseline gap-0.5 border-[2px] border-on-background rounded-full px-2.5 py-1 shadow-brutal-sm ${scoreColor(
+                overall,
+              )}`}
+            >
+              <span
+                className="text-[18px] font-bold tabular-nums leading-none"
+                style={{ fontFamily: "var(--font-headline)" }}
+              >
+                {overall}
+              </span>
+              <span className="text-[11px] font-bold opacity-70 leading-none">
+                /100
+              </span>
+            </span>
+          </span>
+        )}
         <motion.span
           className={`material-symbols-outlined ${
             mine ? "text-on-primary-container" : "text-on-surface-variant"
@@ -168,6 +219,24 @@ export function FeedCard({
                     </span>
                     {t(lang, "analysis_heading")}
                   </span>
+                  {scores && (
+                    <div className="flex flex-col gap-2">
+                      <span
+                        className="text-[12px] tracking-[0.05em] font-bold opacity-70"
+                        style={{ fontFamily: "var(--font-label)" }}
+                      >
+                        {t(lang, "score_heading")}
+                      </span>
+                      {SCORE_CRITERIA.map((c) => (
+                        <ScoreBar
+                          key={c}
+                          label={t(lang, SCORE_LABEL[c])}
+                          value={Math.min(25, Math.max(0, Number(scores[c]) || 0))}
+                          note={analysis.score_notes?.[c]}
+                        />
+                      ))}
+                    </div>
+                  )}
                   <AnalysisRow
                     label={t(lang, "analysis_target")}
                     value={analysis.target_audience}
@@ -204,6 +273,49 @@ export function FeedCard({
         )}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+function ScoreBar({
+  label,
+  value,
+  note,
+}: {
+  label: string;
+  value: number;
+  note?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center justify-between gap-3">
+        <span
+          className="text-[13px] font-bold"
+          style={{ fontFamily: "var(--font-label)" }}
+        >
+          {label}
+        </span>
+        <span
+          className="text-[13px] font-bold tabular-nums opacity-80"
+          style={{ fontFamily: "var(--font-headline)" }}
+        >
+          {value}/25
+        </span>
+      </div>
+      <div className="h-2 w-full bg-surface border-[2px] border-on-background rounded-full overflow-hidden">
+        <div
+          className="h-full bg-on-background"
+          style={{ width: `${(value / 25) * 100}%` }}
+        />
+      </div>
+      {note && (
+        <p
+          className="text-[12px] leading-[1.4] opacity-70"
+          style={{ fontFamily: "var(--font-body)" }}
+        >
+          {note}
+        </p>
+      )}
+    </div>
   );
 }
 

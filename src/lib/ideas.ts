@@ -1,60 +1,9 @@
 import { getSupabase, type IdeaRow } from "./supabase";
+import type { Idea, IdeaAnalysis, Uniqueness } from "./analysis";
 
-export type Uniqueness = "original" | "similar_exists" | "common";
-
-export type IdeaAnalysisLocale = {
-  target_audience: string;
-  monetization_potential: string;
-  possible_competitors: string[];
-};
-
-export type IdeaAnalysis = {
-  uniqueness: Uniqueness;
-  tr?: IdeaAnalysisLocale;
-  en?: IdeaAnalysisLocale;
-  /** legacy flat shape from pre-bilingual records — read-only fallback */
-  target_audience?: string;
-  monetization_potential?: string;
-  possible_competitors?: string[];
-};
-
-export function pickAnalysisLocale(
-  analysis: IdeaAnalysis,
-  lang: "tr" | "en",
-): IdeaAnalysisLocale | null {
-  const own = analysis[lang];
-  if (own) return own;
-  const other = lang === "tr" ? "en" : "tr";
-  const fallback = analysis[other];
-  if (fallback) return fallback;
-  if (analysis.target_audience !== undefined) {
-    return {
-      target_audience: analysis.target_audience,
-      monetization_potential: analysis.monetization_potential ?? "",
-      possible_competitors: analysis.possible_competitors ?? [],
-    };
-  }
-  return null;
-}
-
-/** True when the cached analysis is in the old flat shape and needs a re-run. */
-export function isLegacyAnalysis(analysis: IdeaAnalysis | null | undefined): boolean {
-  if (!analysis) return false;
-  return !analysis.tr && !analysis.en;
-}
-
-export type Idea = {
-  id: string;
-  title: string;
-  description: string;
-  similarLinks: string[];
-  upvotes: number;
-  uniqueness?: Uniqueness | null;
-  aiAnalysis?: IdeaAnalysis | null;
-  isMine?: boolean;
-  createdAt?: string;
-  editCount: number;
-};
+// Re-export the client-safe surface so existing server-side importers
+// (API routes) keep working via "@/lib/ideas".
+export * from "./analysis";
 
 /* --------------------------- In-memory fallback --------------------------- */
 type MemIdea = {
@@ -215,6 +164,27 @@ export async function getIdeaCount(): Promise<number> {
     return count ?? 0;
   }
   return memStore().ideas.size;
+}
+
+/** All ideas (id/title/description) — for maintenance backfills only. */
+export async function listAllIdeas(): Promise<
+  { id: string; title: string; description: string }[]
+> {
+  const sb = getSupabase();
+  if (sb) {
+    const { data, error } = await sb
+      .from("ideas")
+      .select("id, title, description")
+      .order("created_at", { ascending: true })
+      .limit(1000);
+    if (error) throw error;
+    return (data ?? []) as { id: string; title: string; description: string }[];
+  }
+  return [...memStore().ideas.values()].map((m) => ({
+    id: m.id,
+    title: m.title,
+    description: m.description,
+  }));
 }
 
 export type CreateIdeaInput = {

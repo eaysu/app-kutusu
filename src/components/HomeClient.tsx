@@ -10,7 +10,7 @@ import { Feed } from "./Feed";
 import { BottomNav } from "./BottomNav";
 import { CookieToast, CookieWarningBubble } from "./CookieWarning";
 import { EditIdeaModal } from "./EditIdeaModal";
-import { isLegacyAnalysis, type Idea } from "@/lib/ideas";
+import { isLegacyAnalysis, type Idea } from "@/lib/analysis";
 import { t, type Lang } from "@/lib/i18n";
 
 type Tab = "feed" | "mine";

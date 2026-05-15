@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { Idea } from "@/lib/ideas";
+import type { Idea } from "@/lib/analysis";
 import { t, type Lang } from "@/lib/i18n";
 
 type Props = {

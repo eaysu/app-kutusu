@@ -20,7 +20,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const lang = await resolveLang();
   const title = t(lang, "site_title");
   const description = t(lang, "site_description");
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   return {
+    metadataBase: new URL(siteUrl),
     title,
     description,
     openGraph: {
@@ -28,6 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       type: "website",
       locale: lang === "tr" ? "tr_TR" : "en_US",
+      siteName: "App Kutusu",
     },
     twitter: {
       card: "summary",
