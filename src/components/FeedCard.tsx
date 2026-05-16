@@ -24,11 +24,6 @@ const SCORE_LABEL: Record<ScoreCriterion, Key> = {
   monetization: "score_monetization",
 };
 
-function scoreColor(overall: number): string {
-  if (overall >= 70) return "bg-tertiary-container text-on-surface";
-  if (overall >= 40) return "bg-secondary-container text-on-background";
-  return "bg-error text-white";
-}
 
 type Props = {
   idea: Idea;
@@ -75,7 +70,7 @@ export function FeedCard({
             e.stopPropagation();
             onUpvote();
           }}
-          className={`flex items-center gap-1 px-3 py-1.5 border-[2px] border-on-background rounded-full shadow-brutal-sm brutal-press transition-colors ${
+          className={`flex shrink-0 items-center gap-1 px-3 py-1.5 border-[2px] border-on-background rounded-full shadow-brutal-sm brutal-press transition-colors ${
             upvoted ? "bg-tertiary-container" : "bg-secondary-container"
           }`}
           aria-label={`Upvote ${idea.title}`}
@@ -92,42 +87,36 @@ export function FeedCard({
           </span>
         </motion.button>
         <h3
-          className="text-[20px] md:text-[24px] leading-[1.3] font-bold flex-grow"
+          className="min-w-0 flex-grow text-[20px] md:text-[24px] leading-[1.3] font-bold break-words [overflow-wrap:anywhere]"
           style={{ fontFamily: "var(--font-headline)" }}
         >
           {idea.title}
         </h3>
         {overall !== null && (
           <span
-            className="flex flex-col items-center gap-0.5"
+            className="flex shrink-0 flex-col items-end gap-0.5"
             title={t(lang, "score_overall_aria", { n: overall })}
             aria-label={t(lang, "score_overall_aria", { n: overall })}
           >
             <span
-              className="text-[9px] font-bold tracking-[0.08em] opacity-60 leading-none"
+              className="text-[9px] font-bold tracking-[0.08em] opacity-50 leading-none"
               style={{ fontFamily: "var(--font-label)" }}
             >
               {t(lang, "score_badge_label")}
             </span>
-            <span
-              className={`flex items-baseline gap-0.5 border-[2px] border-on-background rounded-full px-2.5 py-1 shadow-brutal-sm ${scoreColor(
-                overall,
-              )}`}
-            >
+            <span className="flex items-baseline gap-0.5 leading-none">
               <span
-                className="text-[18px] font-bold tabular-nums leading-none"
+                className="text-[20px] font-bold tabular-nums"
                 style={{ fontFamily: "var(--font-headline)" }}
               >
                 {overall}
               </span>
-              <span className="text-[11px] font-bold opacity-70 leading-none">
-                /100
-              </span>
+              <span className="text-[11px] font-bold opacity-50">/100</span>
             </span>
           </span>
         )}
         <motion.span
-          className={`material-symbols-outlined ${
+          className={`material-symbols-outlined shrink-0 ${
             mine ? "text-on-primary-container" : "text-on-surface-variant"
           }`}
           animate={{ rotate: expanded ? 180 : 0 }}

@@ -83,9 +83,9 @@ export function Feed({
     const voteDiff = (voteCounts[b.id] ?? 0) - (voteCounts[a.id] ?? 0);
     if (voteDiff !== 0) return voteDiff;
     // Tie-break equal upvotes by AI score; unscored ideas rank last.
-    const sa = overallScore(a.aiAnalysis) ?? -1;
-    const sb = overallScore(b.aiAnalysis) ?? -1;
-    return sb - sa;
+    return (
+      (overallScore(b.aiAnalysis) ?? -1) - (overallScore(a.aiAnalysis) ?? -1)
+    );
   });
 
   return (
