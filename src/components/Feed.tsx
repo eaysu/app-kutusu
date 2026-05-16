@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { Idea } from "@/lib/analysis";
+import { overallScore, type Idea } from "@/lib/analysis";
 import { t, type Lang } from "@/lib/i18n";
 import { FeedCard } from "./FeedCard";
 
@@ -79,9 +79,14 @@ export function Feed({
     });
   }
 
-  const sorted = [...ideas].sort(
-    (a, b) => (voteCounts[b.id] ?? 0) - (voteCounts[a.id] ?? 0),
-  );
+  const sorted = [...ideas].sort((a, b) => {
+    const voteDiff = (voteCounts[b.id] ?? 0) - (voteCounts[a.id] ?? 0);
+    if (voteDiff !== 0) return voteDiff;
+    // Tie-break equal upvotes by AI score; unscored ideas rank last.
+    const sa = overallScore(a.aiAnalysis) ?? -1;
+    const sb = overallScore(b.aiAnalysis) ?? -1;
+    return sb - sa;
+  });
 
   return (
     <section className="flex flex-col gap-6">
