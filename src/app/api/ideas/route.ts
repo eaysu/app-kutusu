@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getOrCreateSessionId } from "@/lib/session";
 import { createIdea, getMyIdea, updateMyIdea } from "@/lib/ideas";
 import { parseSimilarLinks, validateIdea } from "@/lib/validation";
+import { isFlaggedContent } from "@/lib/moderation";
 
 export async function POST(req: Request) {
   const sessionId = await getOrCreateSessionId();
@@ -24,6 +25,10 @@ export async function POST(req: Request) {
   const result = validateIdea(data);
   if (!result.ok) {
     return NextResponse.json({ error: "validation", errors: result.errors }, { status: 400 });
+  }
+
+  if (await isFlaggedContent(`${result.title}\n${result.description}`)) {
+    return NextResponse.json({ error: "moderation" }, { status: 422 });
   }
 
   try {
@@ -60,6 +65,10 @@ export async function PATCH(req: Request) {
   const result = validateIdea(data);
   if (!result.ok) {
     return NextResponse.json({ error: "validation", errors: result.errors }, { status: 400 });
+  }
+
+  if (await isFlaggedContent(`${result.title}\n${result.description}`)) {
+    return NextResponse.json({ error: "moderation" }, { status: 422 });
   }
   try {
     const idea = await updateMyIdea({

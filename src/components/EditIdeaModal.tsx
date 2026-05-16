@@ -28,12 +28,22 @@ export function EditIdeaModal({
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (title.trim().length < 3) {
+    const tt = title.trim();
+    const dd = description.trim();
+    if (tt.length < 3) {
       setError(t(lang, "form_err_title"));
       return;
     }
-    if (description.trim().length < 80) {
-      setError(t(lang, "form_err_desc", { n: description.trim().length }));
+    if (tt.length > 120 || dd.length > 2000) {
+      setError(t(lang, "form_err_too_long"));
+      return;
+    }
+    if (dd.length < 80) {
+      setError(t(lang, "form_err_desc", { n: dd.length }));
+      return;
+    }
+    if (/[<>]/.test(tt) || /[<>]/.test(dd)) {
+      setError(t(lang, "form_err_html"));
       return;
     }
     setError(null);
@@ -117,7 +127,9 @@ export function EditIdeaModal({
                 <span className="text-error text-sm font-medium">
                   {serverError === "edit_limit"
                     ? t(lang, "edit_modal_err_limit")
-                    : t(lang, "edit_modal_err_generic", { err: serverError })}
+                    : serverError === "moderation"
+                      ? t(lang, "form_err_moderation")
+                      : t(lang, "edit_modal_err_generic", { err: serverError })}
                 </span>
               )}
               <div className="flex gap-3 mt-2">

@@ -22,11 +22,21 @@ export function SubmissionForm({ onSubmit, serverError, lang }: Props) {
 
   function validate(): Errors {
     const next: Errors = {};
-    if (title.trim().length < 3) {
+    const tt = title.trim();
+    const dd = description.trim();
+    if (tt.length < 3) {
       next.title = t(lang, "form_err_title");
+    } else if (tt.length > 120) {
+      next.title = t(lang, "form_err_too_long");
+    } else if (/[<>]/.test(tt)) {
+      next.title = t(lang, "form_err_html");
     }
-    if (description.trim().length < 80) {
-      next.description = t(lang, "form_err_desc", { n: description.trim().length });
+    if (dd.length < 80) {
+      next.description = t(lang, "form_err_desc", { n: dd.length });
+    } else if (dd.length > 2000) {
+      next.description = t(lang, "form_err_too_long");
+    } else if (/[<>]/.test(dd)) {
+      next.description = t(lang, "form_err_html");
     }
     return next;
   }
@@ -48,6 +58,7 @@ export function SubmissionForm({ onSubmit, serverError, lang }: Props) {
   function serverErrorText(): string | null {
     if (!serverError) return null;
     if (serverError === "validation") return t(lang, "form_err_validation");
+    if (serverError === "moderation") return t(lang, "form_err_moderation");
     if (serverError === "session_already_has_idea") return t(lang, "form_err_session_dup");
     return t(lang, "form_err_generic", { err: serverError });
   }

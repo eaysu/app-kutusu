@@ -29,6 +29,10 @@ const dict = {
     form_err_desc: "Açıklama en az 80 karakter olmalı (şu anda {n}).",
     form_err_validation: "Yukarıdaki hataları düzelt lütfen.",
     form_err_session_dup: "Bu oturumda zaten aktif bir fikrin var.",
+    form_err_html: "Başlık ve açıklama HTML veya kod içeremez.",
+    form_err_too_long: "Başlık en fazla 120, açıklama en fazla 2000 karakter olabilir.",
+    form_err_moderation:
+      "Bu içerik topluluk kurallarına uymuyor (uygunsuz/yetişkin içerik).",
     form_err_generic: "Gönderilemedi ({err}).",
 
     locked_label: "Feed Kilitli!",
@@ -102,6 +106,11 @@ const dict = {
     form_err_desc: "Description must be at least 80 characters (currently {n}).",
     form_err_validation: "Please fix the errors above.",
     form_err_session_dup: "You already have an active idea in this session.",
+    form_err_html: "Title and description can't contain HTML or code.",
+    form_err_too_long:
+      "Title can be at most 120 and description at most 2000 characters.",
+    form_err_moderation:
+      "This content doesn't meet community guidelines (inappropriate/adult).",
     form_err_generic: "Could not submit ({err}).",
 
     locked_label: "Feed is Locked!",
